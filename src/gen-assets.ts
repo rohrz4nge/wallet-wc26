@@ -28,9 +28,9 @@ async function makeTransparentLogo(w: number, h: number, path: string): Promise<
     .png().toFile(path);
 }
 
-// background.png: full pass width so no upscaling blur on modern iPhones.
-// Real pass render width is 375pt; @3x = 1125px. Use generous height to fill the pass.
-// Dark gradient overlay on bottom 1/3 only — top 2/3 stays completely sharp.
+// strip.png: iOS renders this UNBLURRED (unlike background.png which is always blurred).
+// Full pass width (375pt real = 1125px @3x), generous height — iOS clips at the strip boundary.
+// Dark gradient on bottom 1/3 for text readability; top stays completely sharp.
 async function makeBackground(srcPath: string, w: number, h: number, path: string): Promise<void> {
   const base = await sharp(srcPath)
     .resize(w, h, { fit: "cover", position: "top" })
@@ -73,9 +73,9 @@ await Promise.all([
   makeTransparentLogo(160, 50, join(ASSETS, "logo.png")),
   makeTransparentLogo(320, 100, join(ASSETS, "logo@2x.png")),
   // full pass width (375pt) at each density to avoid upscale blur on modern iPhones
-  makeBackground(BG_SRC, 375, 500, join(ASSETS, "background.png")),
-  makeBackground(BG_SRC, 750, 1000, join(ASSETS, "background@2x.png")),
-  makeBackground(BG_SRC, 1125, 1500, join(ASSETS, "background@3x.png")),
+  makeBackground(BG_SRC, 375, 500, join(ASSETS, "strip.png")),
+  makeBackground(BG_SRC, 750, 1000, join(ASSETS, "strip@2x.png")),
+  makeBackground(BG_SRC, 1125, 1500, join(ASSETS, "strip@3x.png")),
 ]);
 
 console.log("assets generated in", ASSETS);
