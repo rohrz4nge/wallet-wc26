@@ -21,12 +21,15 @@ const signerKey = process.env.PASS_SIGNING_KEY
   ? Buffer.from(process.env.PASS_SIGNING_KEY, "base64")
   : readFileSync(join(ROOT, "pass-key.pem"));
 
-// icons loaded once
+// assets loaded once at startup
 const icon = readFileSync(join(ROOT, "assets", "icon.png"));
 const icon2x = readFileSync(join(ROOT, "assets", "icon@2x.png"));
 const icon3x = readFileSync(join(ROOT, "assets", "icon@3x.png"));
 const logo = readFileSync(join(ROOT, "assets", "logo.png"));
 const logo2x = readFileSync(join(ROOT, "assets", "logo@2x.png"));
+const background = readFileSync(join(ROOT, "assets", "background.png"));
+const background2x = readFileSync(join(ROOT, "assets", "background@2x.png"));
+const background3x = readFileSync(join(ROOT, "assets", "background@3x.png"));
 
 export function getSerialNumber(): string {
   return SERIAL_NUMBER;
@@ -47,13 +50,12 @@ export function buildPassJson(webServiceURL: string): Record<string, unknown> {
     serialNumber: SERIAL_NUMBER,
     organizationName: "FIFA World Cup 2026",
     description: "FIFA World Cup 2026 Live Scores",
-    backgroundColor: "rgb(0, 98, 51)",
     foregroundColor: "rgb(255, 255, 255)",
-    labelColor: "rgb(200, 220, 200)",
+    labelColor: "rgb(255, 255, 255)",
     logoText: "World Cup",
     webServiceURL,
     authenticationToken: AUTH_TOKEN,
-    generic: {
+    eventTicket: {
       headerFields: layout.headerFields,
       primaryFields: layout.primaryFields,
       secondaryFields: layout.secondaryFields,
@@ -73,6 +75,9 @@ export async function generatePass(webServiceURL: string): Promise<Buffer> {
       "icon@3x.png": icon3x,
       "logo.png": logo,
       "logo@2x.png": logo2x,
+      "background.png": background,
+      "background@2x.png": background2x,
+      "background@3x.png": background3x,
       "pass.json": Buffer.from(JSON.stringify(passJson)),
     },
     { wwdr, signerCert, signerKey },
