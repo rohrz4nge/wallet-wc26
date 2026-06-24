@@ -50,11 +50,12 @@ export async function generatePass(webServiceURL: string): Promise<Buffer> {
     serialNumber: SERIAL_NUMBER,
     organizationName: "FIFA World Cup 2026",
     description: "FIFA World Cup 2026 Live Scores",
+    backgroundColor: "rgb(0, 98, 51)",
     foregroundColor: "rgb(255, 255, 255)",
-    labelColor: "rgb(255, 255, 255)",
+    labelColor: "rgb(200, 230, 200)",
     webServiceURL,
     authenticationToken: AUTH_TOKEN,
-    generic: {},
+    eventTicket: {},
   };
 
   const pass = new PKPass(
