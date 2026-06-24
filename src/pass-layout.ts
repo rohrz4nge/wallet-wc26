@@ -6,6 +6,7 @@ export interface PassFields {
   primaryFields: PassFieldContent[];
   secondaryFields: PassFieldContent[];
   auxiliaryFields: PassFieldContent[];
+  footerFields: PassFieldContent[];
   backFields: PassFieldContent[];
 }
 
@@ -71,7 +72,7 @@ export function buildLiveLayout(liveMatches: LiveMatch[]): PassFields {
 
   const back = buildBackFields(liveMatches, [], []);
 
-  return { headerFields: [], primaryFields: [], secondaryFields: secondary, auxiliaryFields: auxiliary, backFields: back };
+  return { headerFields: [], primaryFields: secondary, secondaryFields: secondary, auxiliaryFields: auxiliary, footerFields: auxiliary, backFields: back };
 }
 
 export function buildNoGameLayout(recent: LiveMatch[], upcoming: LiveMatch[]): PassFields {
@@ -111,7 +112,7 @@ export function buildNoGameLayout(recent: LiveMatch[], upcoming: LiveMatch[]): P
   }
 
   const back = buildBackFields([], recent, upcoming);
-  return { headerFields: [], primaryFields: [], secondaryFields: secondary, auxiliaryFields: auxiliary, backFields: back };
+  return { headerFields: [], primaryFields: secondary, secondaryFields: secondary, auxiliaryFields: auxiliary, footerFields: auxiliary, backFields: back };
 }
 
 function buildBackFields(live: LiveMatch[], recent: LiveMatch[], upcoming: LiveMatch[]): PassFieldContent[] {

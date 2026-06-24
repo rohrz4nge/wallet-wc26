@@ -1,9 +1,9 @@
-import { PKPass } from "passkit-generator";
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { getState } from "./state.js";
 import { buildLiveLayout, buildNoGameLayout } from "./pass-layout.js";
+import { buildPkpass } from "./pass-signer.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -16,7 +16,6 @@ const SERIAL_NUMBER = "worldcup-2026";
 // certs loaded once at startup
 const wwdr = readFileSync(join(ROOT, "wwdr.pem"));
 const signerCert = readFileSync(join(ROOT, "pass-cert.pem"));
-// private key: file on disk (local) or PASS_SIGNING_KEY env var (base64, for Render)
 const signerKey = process.env.PASS_SIGNING_KEY
   ? Buffer.from(process.env.PASS_SIGNING_KEY, "base64")
   : readFileSync(join(ROOT, "pass-key.pem"));
@@ -43,6 +42,21 @@ export function buildPassJson(webServiceURL: string): Record<string, unknown> {
       ? buildLiveLayout(liveMatches)
       : buildNoGameLayout(state.recentMatches, state.upcomingMatches);
 
+  const posterFields = {
+    headerFields: layout.headerFields,
+    primaryFields: layout.primaryFields,
+    footerFields: layout.footerFields,
+    backFields: layout.backFields,
+  };
+
+  const genericFields = {
+    headerFields: layout.headerFields,
+    primaryFields: layout.primaryFields,
+    secondaryFields: layout.secondaryFields,
+    auxiliaryFields: layout.auxiliaryFields,
+    backFields: layout.backFields,
+  };
+
   return {
     formatVersion: 1,
     passTypeIdentifier: PASS_TYPE_ID,
@@ -54,21 +68,17 @@ export function buildPassJson(webServiceURL: string): Record<string, unknown> {
     labelColor: "rgb(255, 255, 255)",
     webServiceURL,
     authenticationToken: AUTH_TOKEN,
-    generic: {
-      headerFields: layout.headerFields,
-      primaryFields: layout.primaryFields,
-      secondaryFields: layout.secondaryFields,
-      auxiliaryFields: layout.auxiliaryFields,
-      backFields: layout.backFields,
-    },
+    posterGeneric: posterFields,
+    generic: genericFields,
   };
 }
 
 export async function generatePass(webServiceURL: string): Promise<Buffer> {
   const passJson = buildPassJson(webServiceURL);
 
-  const pass = new PKPass(
+  return buildPkpass(
     {
+      "pass.json": Buffer.from(JSON.stringify(passJson)),
       "icon.png": icon,
       "icon@2x.png": icon2x,
       "icon@3x.png": icon3x,
@@ -77,10 +87,9 @@ export async function generatePass(webServiceURL: string): Promise<Buffer> {
       "background.png": background,
       "background@2x.png": background2x,
       "background@3x.png": background3x,
-      "pass.json": Buffer.from(JSON.stringify(passJson)),
     },
-    { wwdr, signerCert, signerKey },
+    signerCert,
+    signerKey,
+    wwdr,
   );
-
-  return pass.getAsBuffer();
 }
