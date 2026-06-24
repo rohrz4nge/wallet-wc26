@@ -16,7 +16,10 @@ const SERIAL_NUMBER = "worldcup-2026";
 // certs loaded once at startup
 const wwdr = readFileSync(join(ROOT, "wwdr.pem"));
 const signerCert = readFileSync(join(ROOT, "pass-cert.pem"));
-const signerKey = readFileSync(join(ROOT, "pass-key.pem"));
+// private key: file on disk (local) or PASS_SIGNING_KEY env var (base64, for Render)
+const signerKey = process.env.PASS_SIGNING_KEY
+  ? Buffer.from(process.env.PASS_SIGNING_KEY, "base64")
+  : readFileSync(join(ROOT, "pass-key.pem"));
 
 // icons loaded once
 const icon = readFileSync(join(ROOT, "assets", "icon.png"));

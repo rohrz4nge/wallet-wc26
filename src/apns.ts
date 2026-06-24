@@ -13,9 +13,12 @@ let client: ClientHttp2Session | null = null;
 
 function getClient(): ClientHttp2Session {
   if (client && !client.destroyed && !client.closed) return client;
+  const key = process.env.PASS_SIGNING_KEY
+    ? Buffer.from(process.env.PASS_SIGNING_KEY, "base64")
+    : readFileSync(join(ROOT, "pass-key.pem"));
   client = connect(`https://${APNS_HOST}`, {
     cert: readFileSync(join(ROOT, "pass-cert.pem")),
-    key: readFileSync(join(ROOT, "pass-key.pem")),
+    key,
   });
   client.on("error", (err) => {
     log(`[apns] connection error: ${String(err)}`);
