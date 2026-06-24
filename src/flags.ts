@@ -33,7 +33,7 @@ const FLAGS: Record<string, string> = {
   // Group G
   "Belgium": "🇧🇪",
   "Colombia": "🇨🇴",
-  "Ivory Coast": "🇨🇮", "Côte d'Ivoire": "🇨🇮",
+  "Ivory Coast": "🇨🇮", "Côte d'Ivoire": "🇨🇮", "Cote d'Ivoire": "🇨🇮",
   "Paraguay": "🇵🇾",
   // Group H
   "Switzerland": "🇨🇭",
@@ -100,7 +100,7 @@ const FLAGS: Record<string, string> = {
   "Nicaragua": "🇳🇮",
   "Trinidad and Tobago": "🇹🇹",
   "Haiti": "🇭🇹",
-  "Curacao": "🇨🇼",
+  "Curacao": "🇨🇼", "Curaçao": "🇨🇼",
   "Bangladesh": "🇧🇩",
   "India": "🇮🇳",
   "Thailand": "🇹🇭",

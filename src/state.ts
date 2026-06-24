@@ -86,13 +86,17 @@ export function syncSchedule(events: BzzoiroLiveEvent[]): void {
     }
   }
 
+  const next24h = now + 24 * 60 * 60_000;
+
   state.liveMatches = live;
   state.recentMatches = recent
     .sort((a, b) => (b.eventDate ?? "").localeCompare(a.eventDate ?? ""))
-    .slice(0, 8);
-  state.upcomingMatches = upcoming
-    .sort((a, b) => (a.eventDate ?? "").localeCompare(b.eventDate ?? ""))
-    .slice(0, 8);
+    .slice(0, 10);
+  // keep all upcoming matches in the next 24h, then up to 4 more beyond that
+  const sorted = upcoming.sort((a, b) => (a.eventDate ?? "").localeCompare(b.eventDate ?? ""));
+  const within24h = sorted.filter((m) => !m.eventDate || Date.parse(m.eventDate) <= next24h);
+  const beyond = sorted.filter((m) => m.eventDate && Date.parse(m.eventDate) > next24h).slice(0, 4);
+  state.upcomingMatches = [...within24h, ...beyond];
   state.lastUpdatedMs = now;
   state.passLastModifiedMs = now;
 }

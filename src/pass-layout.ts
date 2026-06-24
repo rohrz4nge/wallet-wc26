@@ -61,9 +61,7 @@ export function buildLiveLayout(liveMatches: LiveMatch[]): PassFields {
   ];
 
   const primaryFields: PassFieldContent[] = [
-    { key: "home", label: homeFlag, value: primary.homeTeam },
-    { key: "score", label: "VS", value: scoreStr(primary.homeScore, primary.awayScore) },
-    { key: "away", label: awayFlag, value: primary.awayTeam },
+    { key: "score", label: `${homeFlag} ${primary.homeTeam}  ·  ${primary.awayTeam} ${awayFlag}`, value: scoreStr(primary.homeScore, primary.awayScore) },
   ];
 
   const secondary: PassFieldContent[] = [
@@ -92,9 +90,7 @@ export function buildNoGameLayout(recent: LiveMatch[], upcoming: LiveMatch[]): P
     const homeFlag = flagFor(next.homeTeam);
     const awayFlag = flagFor(next.awayTeam);
     primaryFields = [
-      { key: "home", label: homeFlag, value: next.homeTeam },
-      { key: "vs", label: "", value: "vs" },
-      { key: "away", label: awayFlag, value: next.awayTeam },
+      { key: "matchup", label: `${homeFlag} ${next.homeTeam}  vs  ${next.awayTeam} ${awayFlag}`, value: "Upcoming" },
     ];
     if (next.eventDate) {
       const d = new Date(next.eventDate);
@@ -108,21 +104,15 @@ export function buildNoGameLayout(recent: LiveMatch[], upcoming: LiveMatch[]): P
     const homeFlag = flagFor(last.homeTeam);
     const awayFlag = flagFor(last.awayTeam);
     primaryFields = [
-      { key: "home", label: homeFlag, value: last.homeTeam },
-      { key: "score", label: "FT", value: scoreStr(last.homeScore, last.awayScore) },
-      { key: "away", label: awayFlag, value: last.awayTeam },
+      { key: "score", label: `${homeFlag} ${last.homeTeam}  ·  ${last.awayTeam} ${awayFlag}`, value: scoreStr(last.homeScore, last.awayScore) },
     ];
-    secondaryFields = [{ key: "label", label: "LAST RESULT", value: last.leagueName }];
+    secondaryFields = [{ key: "label", label: "LAST RESULT", value: "Full time" }];
   } else {
-    primaryFields = [
-      { key: "title", label: "", value: "FIFA World Cup 2026" },
-    ];
-    secondaryFields = [{ key: "sub", label: "", value: "No matches scheduled" }];
+    primaryFields = [{ key: "title", label: "FIFA World Cup 2026", value: "No matches scheduled" }];
+    secondaryFields = [];
   }
 
-  const header: PassFieldContent[] = [
-    { key: "wc", label: "", value: "⚽ World Cup 2026" },
-  ];
+  const header: PassFieldContent[] = [];
 
   const back = buildBackFields([], recent, upcoming);
   return {
@@ -154,11 +144,17 @@ function buildBackFields(live: LiveMatch[], recent: LiveMatch[], upcoming: LiveM
   }
 
   if (upcoming.length > 0) {
-    back.push({
-      key: "upcoming_header",
-      label: "UPCOMING",
-      value: upcoming.map(matchLine).join("\n"),
-    });
+    const byDay = new Map<string, LiveMatch[]>();
+    for (const m of upcoming) {
+      const day = m.eventDate ? m.eventDate.slice(0, 10) : "TBD";
+      const arr = byDay.get(day) ?? [];
+      arr.push(m);
+      byDay.set(day, arr);
+    }
+    for (const [day, matches] of byDay) {
+      const label = day === "TBD" ? "UPCOMING" : new Date(day + "T00:00:00Z").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).toUpperCase();
+      back.push({ key: `upcoming_${day}`, label, value: matches.map(matchLine).join("\n") });
+    }
   }
 
   back.push({
