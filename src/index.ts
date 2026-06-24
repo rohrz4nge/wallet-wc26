@@ -136,7 +136,7 @@ async function startWatcher(): Promise<void> {
     leagueIds = new Set(process.env.BZZOIRO_LEAGUE_ID.split(",").map((s) => Number(s.trim())));
     log("scope: explicit league ids", { leagueIds: [...leagueIds] });
   } else {
-    const wcId = await resolveLeagueId({ token, nameMatch: /world cup/i });
+    const wcId = await resolveLeagueId({ token, nameMatch: /^world cup 20\d\d$/i });
     if (wcId == null) {
       log("WARNING: could not resolve World Cup league — watching nothing");
       leagueIds = new Set();
