@@ -55,7 +55,7 @@ async function makeBackground(srcPath: string, w: number, h: number, path: strin
 
   await sharp(base)
     .composite([{ input: gradient, left: 0, top: fadeTop, blend: "over" }])
-    .png()
+    .png({ compressionLevel: 9, effort: 10 })
     .toFile(path);
 }
 
@@ -72,10 +72,10 @@ await Promise.all([
   makeIcon(87, join(ASSETS, "icon@3x.png")),
   makeTransparentLogo(160, 50, join(ASSETS, "logo.png")),
   makeTransparentLogo(320, 100, join(ASSETS, "logo@2x.png")),
-  // full pass width (375pt) at each density to avoid upscale blur on modern iPhones
-  makeBackground(BG_SRC, 375, 500, join(ASSETS, "strip.png")),
-  makeBackground(BG_SRC, 750, 1000, join(ASSETS, "strip@2x.png")),
-  makeBackground(BG_SRC, 1125, 1500, join(ASSETS, "strip@3x.png")),
+  // strip height spec: 196pt @1x — keep dimensions tight so the pkpass stays small
+  makeBackground(BG_SRC, 375, 196, join(ASSETS, "strip.png")),
+  makeBackground(BG_SRC, 750, 392, join(ASSETS, "strip@2x.png")),
+  makeBackground(BG_SRC, 1125, 588, join(ASSETS, "strip@3x.png")),
 ]);
 
 console.log("assets generated in", ASSETS);
