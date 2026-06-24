@@ -34,14 +34,14 @@ async function handleRequest(req: Request): Promise<Response> {
   const method = req.method;
 
   // ─── health ────────────────────────────────────────────────────────────────
-  if (path === "/health" || path === "/") {
+  if (path === "/health") {
     const state = getState();
     const h = watcher?.health() ?? { ok: false };
     return Response.json({ ...h, liveMatches: state.liveMatches.size, lastUpdatedMs: state.lastUpdatedMs });
   }
 
   // ─── pass download (for adding to Wallet) ─────────────────────────────────
-  if (path === "/download" && method === "GET") {
+  if ((path === "/download" || path === "/") && method === "GET") {
     log("pass download requested");
     const buf = await generatePass(SERVICE_URL);
     return new Response(buf, {
