@@ -54,7 +54,7 @@ export function buildPassJson(webServiceURL: string): Record<string, unknown> {
     labelColor: "rgb(255, 255, 255)",
     webServiceURL,
     authenticationToken: AUTH_TOKEN,
-    eventTicket: {
+    generic: {
       headerFields: layout.headerFields,
       primaryFields: layout.primaryFields,
       secondaryFields: layout.secondaryFields,
