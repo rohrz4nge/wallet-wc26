@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { getState } from "./state.js";
-import { buildLiveLayout, buildNoGameLayout } from "./pass-layout.js";
+import { buildLayout } from "./pass-layout.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -24,12 +24,6 @@ const icon2x = readFileSync(join(ROOT, "assets", "icon@2x.png"));
 const icon3x = readFileSync(join(ROOT, "assets", "icon@3x.png"));
 const logo = readFileSync(join(ROOT, "assets", "logo.png"));
 const logo2x = readFileSync(join(ROOT, "assets", "logo@2x.png"));
-const background = readFileSync(join(ROOT, "assets", "background.png"));
-const background2x = readFileSync(join(ROOT, "assets", "background@2x.png"));
-const background3x = readFileSync(join(ROOT, "assets", "background@3x.png"));
-const thumbnail = readFileSync(join(ROOT, "assets", "thumbnail.png"));
-const thumbnail2x = readFileSync(join(ROOT, "assets", "thumbnail@2x.png"));
-const thumbnail3x = readFileSync(join(ROOT, "assets", "thumbnail@3x.png"));
 
 export function getSerialNumber(): string {
   return SERIAL_NUMBER;
@@ -38,47 +32,38 @@ export function getSerialNumber(): string {
 export async function generatePass(webServiceURL: string): Promise<Buffer> {
   const state = getState();
   const liveMatches = [...state.liveMatches.values()];
-  const layout =
-    liveMatches.length > 0
-      ? buildLiveLayout(liveMatches)
-      : buildNoGameLayout(state.recentMatches, state.upcomingMatches);
-
-  const passJson = {
-    formatVersion: 1,
-    passTypeIdentifier: PASS_TYPE_ID,
-    teamIdentifier: TEAM_ID,
-    serialNumber: SERIAL_NUMBER,
-    organizationName: "FIFA World Cup 2026",
-    description: "FIFA World Cup 2026 Live Scores",
-    backgroundColor: "rgb(0, 98, 51)",
-    foregroundColor: "rgb(255, 255, 255)",
-    labelColor: "rgb(200, 230, 200)",
-    webServiceURL,
-    authenticationToken: AUTH_TOKEN,
-    eventTicket: {},
-  };
+  const layout = buildLayout(liveMatches, state.recentMatches, state.upcomingMatches);
 
   const pass = new PKPass(
     {
-      "pass.json": Buffer.from(JSON.stringify(passJson)),
+      "pass.json": Buffer.from(JSON.stringify({
+        formatVersion: 1,
+        passTypeIdentifier: PASS_TYPE_ID,
+        teamIdentifier: TEAM_ID,
+        serialNumber: SERIAL_NUMBER,
+        organizationName: "FIFA World Cup 2026",
+        description: "FIFA World Cup 2026 Live Scores",
+        backgroundColor: "rgb(0, 98, 51)",
+        foregroundColor: "rgb(255, 255, 255)",
+        labelColor: "rgb(180, 220, 180)",
+        webServiceURL,
+        authenticationToken: AUTH_TOKEN,
+        eventTicket: {},
+      })),
       "icon.png": icon,
       "icon@2x.png": icon2x,
       "icon@3x.png": icon3x,
       "logo.png": logo,
       "logo@2x.png": logo2x,
-      "background.png": background,
-      "background@2x.png": background2x,
-      "background@3x.png": background3x,
-      "thumbnail.png": thumbnail,
-      "thumbnail@2x.png": thumbnail2x,
-      "thumbnail@3x.png": thumbnail3x,
     },
     { wwdr, signerCert, signerKey },
   );
 
+  for (const f of layout.headerFields)    pass.headerFields.push(f);
+  for (const f of layout.primaryFields)   pass.primaryFields.push(f);
   for (const f of layout.secondaryFields) pass.secondaryFields.push(f);
   for (const f of layout.auxiliaryFields) pass.auxiliaryFields.push(f);
-  for (const f of layout.backFields) pass.backFields.push(f);
+  for (const f of layout.backFields)      pass.backFields.push(f);
 
   return pass.getAsBuffer();
 }
