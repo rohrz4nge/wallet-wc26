@@ -76,6 +76,10 @@ await Promise.all([
   makeBackground(BG_SRC, 375, 450, join(ASSETS, "background.png")),
   makeBackground(BG_SRC, 750, 900, join(ASSETS, "background@2x.png")),
   makeBackground(BG_SRC, 1125, 1350, join(ASSETS, "background@3x.png")),
+  // thumbnail.png — square crop used by posterGeneric (90×90pt)
+  sharp(BG_SRC).resize(90, 90, { fit: "cover", position: "top" }).png({ compressionLevel: 9 }).toFile(join(ASSETS, "thumbnail.png")),
+  sharp(BG_SRC).resize(180, 180, { fit: "cover", position: "top" }).png({ compressionLevel: 9 }).toFile(join(ASSETS, "thumbnail@2x.png")),
+  sharp(BG_SRC).resize(270, 270, { fit: "cover", position: "top" }).png({ compressionLevel: 9 }).toFile(join(ASSETS, "thumbnail@3x.png")),
 ]);
 
 console.log("assets generated in", ASSETS);

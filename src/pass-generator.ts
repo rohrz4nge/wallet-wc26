@@ -29,6 +29,9 @@ const logo2x = readFileSync(join(ROOT, "assets", "logo@2x.png"));
 const background = readFileSync(join(ROOT, "assets", "background.png"));
 const background2x = readFileSync(join(ROOT, "assets", "background@2x.png"));
 const background3x = readFileSync(join(ROOT, "assets", "background@3x.png"));
+const thumbnail = readFileSync(join(ROOT, "assets", "thumbnail.png"));
+const thumbnail2x = readFileSync(join(ROOT, "assets", "thumbnail@2x.png"));
+const thumbnail3x = readFileSync(join(ROOT, "assets", "thumbnail@3x.png"));
 
 export function getSerialNumber(): string {
   return SERIAL_NUMBER;
@@ -87,6 +90,9 @@ export async function generatePass(webServiceURL: string): Promise<Buffer> {
       "background.png": background,
       "background@2x.png": background2x,
       "background@3x.png": background3x,
+      "thumbnail.png": thumbnail,
+      "thumbnail@2x.png": thumbnail2x,
+      "thumbnail@3x.png": thumbnail3x,
     },
     signerCert,
     signerKey,
