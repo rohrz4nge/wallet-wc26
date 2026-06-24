@@ -70,7 +70,7 @@ export function syncSchedule(events: BzzoiroLiveEvent[]): void {
       minute: ev.current_minute,
       status: ev.status,
       period: ev.period,
-      leagueName: ev.league_name ?? "FIFA World Cup",
+      leagueName: ev.league_name ?? "World Cup 2026",
       eventDate: ev.event_date,
       isLive: ev.status === "inprogress",
     };

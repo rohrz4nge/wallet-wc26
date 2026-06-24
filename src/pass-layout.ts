@@ -128,7 +128,7 @@ function buildIdleLayout(recent: LiveMatch[], upcoming: LiveMatch[]): PassLayout
 
   return {
     headerFields: [],
-    primaryFields: [{ key: "wc", label: "FIFA WORLD CUP 2026", value: "No matches today" }],
+    primaryFields: [{ key: "wc", label: "WORLD CUP 2026", value: "No matches today" }],
     secondaryFields: [],
     auxiliaryFields: [],
     backFields: [],
