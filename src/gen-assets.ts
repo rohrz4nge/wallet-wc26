@@ -22,15 +22,39 @@ async function makeIcon(size: number, path: string): Promise<void> {
     .png().toFile(path);
 }
 
-async function makeLogo(w: number, h: number, path: string): Promise<void> {
-  await sharp({ create: { width: w, height: h, channels: 4, background: BG } }).png().toFile(path);
+// transparent logo so background image shows through the logo area
+async function makeTransparentLogo(w: number, h: number, path: string): Promise<void> {
+  await sharp({ create: { width: w, height: h, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
+    .png().toFile(path);
 }
 
-// background.png for eventTicket — resize source image to pass background dimensions
-// Apple spec: 180×220 @1x, 360×440 @2x, 540×660 @3x
+// background.png: full pass width so no upscaling blur on modern iPhones.
+// Real pass render width is 375pt; @3x = 1125px. Use generous height to fill the pass.
+// Dark gradient overlay on bottom 1/3 only — top 2/3 stays completely sharp.
 async function makeBackground(srcPath: string, w: number, h: number, path: string): Promise<void> {
-  await sharp(srcPath)
+  const base = await sharp(srcPath)
     .resize(w, h, { fit: "cover", position: "top" })
+    .png()
+    .toBuffer();
+
+  // gradient covers only the bottom 1/3 — fades from transparent to dark for text readability
+  const fadeH = Math.round(h / 3);
+  const fadeTop = h - fadeH;
+
+  const gradient = Buffer.from(
+    `<svg width="${w}" height="${fadeH}">
+      <defs>
+        <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="black" stop-opacity="0"/>
+          <stop offset="100%" stop-color="black" stop-opacity="0.6"/>
+        </linearGradient>
+      </defs>
+      <rect width="${w}" height="${fadeH}" fill="url(#g)"/>
+    </svg>`
+  );
+
+  await sharp(base)
+    .composite([{ input: gradient, left: 0, top: fadeTop, blend: "over" }])
     .png()
     .toFile(path);
 }
@@ -46,11 +70,12 @@ await Promise.all([
   makeIcon(29, join(ASSETS, "icon.png")),
   makeIcon(58, join(ASSETS, "icon@2x.png")),
   makeIcon(87, join(ASSETS, "icon@3x.png")),
-  makeLogo(160, 50, join(ASSETS, "logo.png")),
-  makeLogo(320, 100, join(ASSETS, "logo@2x.png")),
-  makeBackground(BG_SRC, 180, 220, join(ASSETS, "background.png")),
-  makeBackground(BG_SRC, 360, 440, join(ASSETS, "background@2x.png")),
-  makeBackground(BG_SRC, 540, 660, join(ASSETS, "background@3x.png")),
+  makeTransparentLogo(160, 50, join(ASSETS, "logo.png")),
+  makeTransparentLogo(320, 100, join(ASSETS, "logo@2x.png")),
+  // full pass width (375pt) at each density to avoid upscale blur on modern iPhones
+  makeBackground(BG_SRC, 375, 500, join(ASSETS, "background.png")),
+  makeBackground(BG_SRC, 750, 1000, join(ASSETS, "background@2x.png")),
+  makeBackground(BG_SRC, 1125, 1500, join(ASSETS, "background@3x.png")),
 ]);
 
 console.log("assets generated in", ASSETS);
