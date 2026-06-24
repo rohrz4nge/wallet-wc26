@@ -27,9 +27,9 @@ const icon2x = readFileSync(join(ROOT, "assets", "icon@2x.png"));
 const icon3x = readFileSync(join(ROOT, "assets", "icon@3x.png"));
 const logo = readFileSync(join(ROOT, "assets", "logo.png"));
 const logo2x = readFileSync(join(ROOT, "assets", "logo@2x.png"));
-const strip = readFileSync(join(ROOT, "assets", "strip.png"));
-const strip2x = readFileSync(join(ROOT, "assets", "strip@2x.png"));
-const strip3x = readFileSync(join(ROOT, "assets", "strip@3x.png"));
+const background = readFileSync(join(ROOT, "assets", "background.png"));
+const background2x = readFileSync(join(ROOT, "assets", "background@2x.png"));
+const background3x = readFileSync(join(ROOT, "assets", "background@3x.png"));
 
 export function getSerialNumber(): string {
   return SERIAL_NUMBER;
@@ -74,9 +74,9 @@ export async function generatePass(webServiceURL: string): Promise<Buffer> {
       "icon@3x.png": icon3x,
       "logo.png": logo,
       "logo@2x.png": logo2x,
-      "strip.png": strip,
-      "strip@2x.png": strip2x,
-      "strip@3x.png": strip3x,
+      "background.png": background,
+      "background@2x.png": background2x,
+      "background@3x.png": background3x,
       "pass.json": Buffer.from(JSON.stringify(passJson)),
     },
     { wwdr, signerCert, signerKey },

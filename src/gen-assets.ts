@@ -72,10 +72,10 @@ await Promise.all([
   makeIcon(87, join(ASSETS, "icon@3x.png")),
   makeTransparentLogo(160, 50, join(ASSETS, "logo.png")),
   makeTransparentLogo(320, 100, join(ASSETS, "logo@2x.png")),
-  // strip height spec: 196pt @1x — keep dimensions tight so the pkpass stays small
-  makeBackground(BG_SRC, 375, 196, join(ASSETS, "strip.png")),
-  makeBackground(BG_SRC, 750, 392, join(ASSETS, "strip@2x.png")),
-  makeBackground(BG_SRC, 1125, 588, join(ASSETS, "strip@3x.png")),
+  // background.png — full pass width, capped height, max compression to keep pkpass fast
+  makeBackground(BG_SRC, 375, 450, join(ASSETS, "background.png")),
+  makeBackground(BG_SRC, 750, 900, join(ASSETS, "background@2x.png")),
+  makeBackground(BG_SRC, 1125, 1350, join(ASSETS, "background@3x.png")),
 ]);
 
 console.log("assets generated in", ASSETS);
