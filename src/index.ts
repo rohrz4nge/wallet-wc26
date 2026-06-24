@@ -47,6 +47,7 @@ async function handleRequest(req: Request): Promise<Response> {
     return new Response(buf, {
       headers: {
         "content-type": "application/vnd.apple.pkpass",
+        "content-disposition": 'inline; filename="worldcup2026.pkpass"',
       },
     });
   }
