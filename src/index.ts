@@ -179,6 +179,11 @@ const server = Bun.serve({
 
 log("server started", { port: PORT, serviceUrl: SERVICE_URL });
 
+// keepalive — ping ourselves every 10 min so Render free tier never sleeps during matches
+setInterval(() => {
+  fetch(`${SERVICE_URL}/health`).catch(() => {});
+}, 10 * 60_000).unref();
+
 // self-restart backstop
 let unhealthyStreak = 0;
 setInterval(() => {
